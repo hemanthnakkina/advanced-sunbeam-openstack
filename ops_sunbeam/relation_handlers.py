@@ -119,17 +119,21 @@ class IngressHandler(RelationHandler):
         logger.debug("Setting up ingress event handler")
         # Lazy import to ensure this lib is only required if the charm
         # has this relation.
-        import charms.traefik_k8s.v0.ingress as ingress
+        import charms.traefik_k8s.v1.ingress as ingress
         interface = ingress.IngressPerAppRequirer(
             self.charm,
             self.relation_name,
             port=self.default_ingress_port,
         )
+        """
         _rname = self.relation_name.replace("-", "_")
         ingress_relation_event = getattr(
             self.charm.on, f"{_rname}_relation_changed"
         )
         self.framework.observe(ingress_relation_event,
+                               self._on_ingress_changed)
+        """
+        self.framework.observe(interface.on.ready,
                                self._on_ingress_changed)
         return interface
 
